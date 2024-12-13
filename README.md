@@ -1,7 +1,7 @@
 **Five in A Row Game Project**
 
 This is a simple project that implements a local search algorithm for the game Five in A Row (Gomoku) and the game itself in Java.
-This algorithm can win ~80% of the time against human players and requires less than 200 lines of code, compared to at least thousands using other methods. 
+This algorithm can win ~95% of the time against human players and requires less than 200 lines of code, compared to at least thousands using other methods. 
 
 **Key Ideas**
 Given that the board is 19 by 19, it will be impossible to search each slot, especially as depth increase. Thus, the algorithm only search locally, the neighbors of existing pieces. The score calculation is based on two factors:
