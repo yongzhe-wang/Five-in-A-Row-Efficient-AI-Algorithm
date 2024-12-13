@@ -18,14 +18,14 @@ public class GomokuBoard extends JPanel {
     // 1 - Player 1
     // 2 - Player 2
 
-    public int[][] board;
-    public Node[][] nodeBoard;
+    private int[][] board;
+    private Node[][] nodeBoard;
     private final Image backgroundImage;
     private int cursorX, cursorY;
     private int currentPlayer;
     private final Stack<Node[][]> nodeBoardHistory;
-    private final MiniMaxAlphaAI AIandrew;
-    private boolean isAI;
+    private MiniMaxAlphaAI AIandrew;
+    private final boolean isAI;
 
 
 
@@ -72,11 +72,10 @@ public class GomokuBoard extends JPanel {
         int y = e.getY() / CELL_SIZE;
 
         if (BoardUtils.isValidMove(x, y, board)) {
-            placePiece(x, y);
-            if (isAI) {
-                int[] coord = AIandrew.evaluateMultipleLayers(nodeBoard, 2, 4);
-                System.out.println(coord[0] + " " + coord[1]);
-                placePiece(coord[0], coord[1]);
+            boolean isFinish = placePiece(x, y);
+            if (isAI && !isFinish) {
+                int[] coor = AIandrew.evaluateMultipleLayers(nodeBoard, 2, 4);
+                placePiece(coor[0], coor[1]);
             }
             repaint();
         }
@@ -91,7 +90,12 @@ public class GomokuBoard extends JPanel {
             case KeyEvent.VK_D -> cursorX = Math.min(GRID_SIZE - 1, cursorX + 1);
             case KeyEvent.VK_ENTER -> {
                 if (BoardUtils.isValidMove(cursorX, cursorY, board)) {
-                    placePiece(cursorX, cursorY);
+                    boolean isFinish = placePiece(cursorX, cursorY);
+                    if (isAI && !isFinish) {
+                        int[] coord = AIandrew.evaluateMultipleLayers(nodeBoard, 2, 4);
+                        System.out.println(coord[0] + " " + coord[1]);
+                        placePiece(coord[0], coord[1]);
+                    }
                     repaint();
                 }
             }
@@ -100,7 +104,7 @@ public class GomokuBoard extends JPanel {
     }
 
     // Implements placing a piece.
-    public void placePiece(int x, int y) {
+    public boolean placePiece(int x, int y) {
         nodeBoardHistory.push(BoardUtils.copyNodeBoard(nodeBoard));
         // New node for new piece
         Node newNode = new Node(x, y, currentPlayer);
@@ -117,11 +121,13 @@ public class GomokuBoard extends JPanel {
                 JOptionPane.showMessageDialog(this, "Player 1 lose!");
             }
             resetGame();
+            return true;
         }
 
         // Switch between 1 and 2
         currentPlayer = 3 - currentPlayer;
         board = BoardUtils.getSimpleBoard(nodeBoard);
+        return false;
     }
 
     // Allows player to take back one move.
@@ -141,7 +147,8 @@ public class GomokuBoard extends JPanel {
     public void resetGame() {
         nodeBoard = new Node[GRID_SIZE][GRID_SIZE];
         board = BoardUtils.getSimpleBoard(nodeBoard);
-        currentPlayer = 2;
+        this.AIandrew = new MiniMaxAlphaAI();
+        currentPlayer = 1;
         repaint();
     }
 
