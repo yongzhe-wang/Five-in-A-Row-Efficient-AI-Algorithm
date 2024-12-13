@@ -2,6 +2,7 @@
 
 
 Files.
+
 **BoardUtils.java** - a static class that implements a series of useful static functions (maniuplate
 arrays, getters, calculate directions) that is used throughout all other parts of the project.
 
